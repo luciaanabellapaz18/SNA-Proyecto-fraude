@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Interactivo | Sistema de Notificación Automática (SNA)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Corporate Blue & Light Gray -->
+    <!-- Application Structure Plan: He diseñado una SPA estilo dashboard con una barra de navegación lateral fija. Esta estructura es superior a un documento lineal porque permite al usuario explorar los temas de interés en cualquier orden (por ejemplo, un gerente puede ir directo al Resumen Ejecutivo, mientras que un técnico puede saltar al Flujo Interactivo). El flujo principal se ha convertido en la pieza central e interactiva, donde los usuarios pueden hacer clic en cada paso para obtener detalles, fomentando la exploración activa en lugar de la lectura pasiva. Esta arquitectura prioriza la usabilidad y la rápida comprensión del sistema. -->
+    <!-- Visualization & Content Choices: Resumen Ejecutivo -> Objetivo: Informar -> Presentación: Tarjetas de KPI para impacto rápido. Flujo Principal -> Objetivo: Organizar/Explorar -> Presentación: Diagrama de flujo interactivo con HTML/CSS y JS para mostrar/ocultar detalles al hacer clic, transformando texto estático en una herramienta de aprendizaje. Funcionalidades -> Objetivo: Comparar -> Presentación: Rejilla de tarjetas con iconos Unicode para una lectura visual rápida. Arquitectura -> Objetivo: Organizar -> Presentación: Diagrama visual simple hecho con divs de HTML/Tailwind para claridad sin complejidad. Todas las decisiones evitan SVG/Mermaid y utilizan tecnologías web estándar para una máxima compatibilidad y rendimiento. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .section-fade {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .sidebar-link {
+            transition: all 0.2s ease;
+        }
+        .sidebar-link.active, .sidebar-link:hover {
+            background-color: #eef2ff;
+            color: #4338ca;
+            transform: translateX(4px);
+        }
+        .flowchart-step {
+            transition: all 0.3s ease-in-out;
+            cursor: pointer;
+        }
+        .flowchart-step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .flowchart-detail {
+            display: none;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        }
+        .flowchart-detail.open {
+            display: block;
+            max-height: 500px;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .arrow {
+            text-align: center;
+            font-size: 2rem;
+            color: #cbd5e1;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r border-slate-200 flex flex-col">
+            <div class="p-6 border-b border-slate-200">
+                <h1 class="text-xl font-bold text-indigo-700">SNA Dashboard</h1>
+                <p class="text-sm text-slate-500">Presentación del Sistema</p>
+            </div>
+            <nav class="flex-1 p-4 space-y-2">
+                <a href="#resumen" class="sidebar-link active flex items-center px-4 py-2 text-slate-600 font-medium rounded-md">
+                    <span class="mr-3">🏠</span> Resumen Ejecutivo
+                </a>
+                <a href="#funcionamiento" class="sidebar-link flex items-center px-4 py-2 text-slate-600 font-medium rounded-md">
+                    <span class="mr-3">⚙️</span> Funcionamiento Interactivo
+                </a>
+                <a href="#caracteristicas" class="sidebar-link flex items-center px-4 py-2 text-slate-600 font-medium rounded-md">
+                    <span class="mr-3">✨</span> Características Clave
+                </a>
+                <a href="#arquitectura" class="sidebar-link flex items-center px-4 py-2 text-slate-600 font-medium rounded-md">
+                    <span class="mr-3">🏗️</span> Arquitectura y Alcance
+                </a>
+                <a href="#futuro" class="sidebar-link flex items-center px-4 py-2 text-slate-600 font-medium rounded-md">
+                    <span class="mr-3">🚀</span> Futuro del Proyecto
+                </a>
+            </nav>
+            <div class="p-6 border-t border-slate-200 text-xs text-slate-400">
+                <p>Versión 1.0</p>
+                <p>Autor: Lucía Paz & Gemini</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8 overflow-y-auto">
+
+            <!-- Resumen Ejecutivo Section -->
+            <section id="resumen" class="section-fade">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Resumen Ejecutivo</h2>
+                <p class="text-slate-600 mb-8">Una visión general del Sistema de Notificación Automática (SNA) y el valor que aporta.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">¿Qué es el SNA?</h3>
+                        <p class="text-slate-600">Es una herramienta de escritorio desarrollada en Python para automatizar el envío de correos de notificación para avisos dados de baja por fraude.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">Objetivo Principal</h3>
+                        <p class="text-slate-600">Optimizar el flujo de trabajo del equipo de Calidad de Contenido, aumentando la eficiencia y estandarizando la comunicación con los usuarios.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">Problema que Resuelve</h3>
+                        <p class="text-slate-600">Elimina el proceso manual, repetitivo y propenso a errores de notificar a los contactos, ahorrando una cantidad significativa de tiempo por cada caso.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Funcionamiento Interactivo Section -->
+            <section id="funcionamiento" class="hidden section-fade">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Funcionamiento Interactivo</h2>
+                <p class="text-slate-600 mb-8">Haz clic en cada paso para explorar en detalle el flujo de trabajo de la aplicación.</p>
+                
+                <div class="bg-white p-8 rounded-lg shadow-sm border border-slate-200">
+                    <div id="flowchart" class="flex flex-col items-center">
+                        <div class="flowchart-step bg-slate-100 p-4 rounded-lg w-full md:w-3/4 text-center shadow-md border border-slate-200">
+                            <h3 class="font-semibold text-slate-800">1. Inicio y Carga de Datos</h3>
+                            <p class="text-sm text-slate-500">El usuario carga un archivo .xlsx o .csv y selecciona la base de datos.</p>
+                        </div>
+                        <div class="flowchart-detail bg-indigo-50 p-4 rounded-b-lg w-full md:w-3/4 -mt-2">
+                            <p class="text-sm text-indigo-800">El archivo contiene una columna con las URLs finales de los avisos a procesar. La selección de la base de datos (RELA, Argentina, Brasil) es crucial para que el sistema sepa dónde buscar la información de los contactos.</p>
+                        </div>
+                        <div class="arrow">↓</div>
+                        <div class="flowchart-step bg-slate-100 p-4 rounded-lg w-full md:w-3/4 text-center shadow-md border border-slate-200">
+                            <h3 class="font-semibold text-slate-800">2. Procesamiento de URLs</h3>
+                            <p class="text-sm text-slate-500">Para cada URL, el sistema extrae el ID del aviso y detecta el portal.</p>
+                        </div>
+                        <div class="flowchart-detail bg-indigo-50 p-4 rounded-b-lg w-full md:w-3/4 -mt-2">
+                            <p class="text-sm text-indigo-800">El script utiliza expresiones regulares para aislar el número de ID y analiza el dominio de la URL (ej: 'zonaprop', 'imovelweb') para identificar el portal. Si una URL no es válida, se registra y se ignora.</p>
+                        </div>
+                        <div class="arrow">↓</div>
+                        <div class="flowchart-step bg-slate-100 p-4 rounded-lg w-full md:w-3/4 text-center shadow-md border border-slate-200">
+                            <h3 class="font-semibold text-slate-800">3. Búsqueda en Base de Datos</h3>
+                            <p class="text-sm text-slate-500">Se conecta a la base de datos seleccionada y busca los contactos asociados al ID.</p>
+                        </div>
+                        <div class="flowchart-detail bg-indigo-50 p-4 rounded-b-lg w-full md:w-3/4 -mt-2">
+                            <p class="text-sm text-indigo-800">Se ejecuta una consulta SQL para obtener la lista de correos electrónicos. El sistema filtra automáticamente contactos anónimos o inválidos (que no contienen '@'). Si no se encuentran contactos, se registra el evento y se pasa al siguiente aviso.</p>
+                        </div>
+                         <div class="arrow">↓</div>
+                        <div class="flowchart-step bg-slate-100 p-4 rounded-lg w-full md:w-3/4 text-center shadow-md border border-slate-200">
+                            <h3 class="font-semibold text-slate-800">4. Construcción del Correo</h3>
+                            <p class="text-sm text-slate-500">Se genera el asunto y cuerpo del correo usando la plantilla correcta para el portal.</p>
+                        </div>
+                        <div class="flowchart-detail bg-indigo-50 p-4 rounded-b-lg w-full md:w-3/4 -mt-2">
+                            <p class="text-sm text-indigo-800">El sistema elige la plantilla en español o portugués y la personaliza con el nombre del portal, el pie de página correspondiente y la URL final del aviso que fue proporcionada por el usuario.</p>
+                        </div>
+                        <div class="arrow">↓</div>
+                        <div class="flowchart-step bg-green-100 p-4 rounded-lg w-full md:w-3/4 text-center shadow-md border border-green-200">
+                            <h3 class="font-semibold text-green-800">5. Envío y Registro</h3>
+                            <p class="text-sm text-green-600">Se envía un único correo en copia oculta (BCC) y se actualiza el log de actividad.</p>
+                        </div>
+                        <div class="flowchart-detail bg-green-50 p-4 rounded-b-lg w-full md:w-3/4 -mt-2">
+                            <p class="text-sm text-green-800">El uso de BCC protege la privacidad de los contactos. Si el "Modo de Prueba" está activo, todos los correos se desvían a la dirección de prueba designada. Cada acción, sea exitosa o fallida, se registra en la interfaz para total transparencia.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Características Clave Section -->
+            <section id="caracteristicas" class="hidden section-fade">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Características Clave</h2>
+                <p class="text-slate-600 mb-8">Un desglose de las funcionalidades que hacen del SNA una herramienta potente y flexible.</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">📦 Procesamiento por Lotes</h3>
+                        <p class="text-slate-600">Carga y procesa cientos de avisos a la vez mediante archivos Excel o CSV, maximizando la productividad.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">🔗 Entrada Flexible</h3>
+                        <p class="text-slate-600">Acepta una lista de URLs finales, simplificando la preparación de datos para el usuario.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">🗃️ Multi-Base de Datos</h3>
+                        <p class="text-slate-600">Permite al usuario seleccionar la base de datos correcta (RELA, Argentina, Brasil) para cada lote de trabajo.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">🌐 Identificación Automática</h3>
+                        <p class="text-slate-600">Detecta automáticamente el portal a partir de la URL, asegurando el uso de la plantilla y branding correctos.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">🗣️ Comunicación Multi-idioma</h3>
+                        <p class="text-slate-600">Adapta el idioma del correo (español o portugués) según el portal, garantizando una comunicación adecuada.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+                        <h3 class="text-lg font-semibold text-indigo-700 mb-2">🛡️ Modo de Prueba Seguro</h3>
+                        <p class="text-slate-600">Valida todo el proceso de forma segura enviando los resultados a un correo de prueba sin contactar a usuarios reales.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Arquitectura y Alcance Section -->
+            <section id="arquitectura" class="hidden section-fade">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Arquitectura y Alcance</h2>
+                <p class="text-slate-600 mb-8">Cómo está construido el sistema y cuáles son sus límites definidos.</p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-800 mb-4">Diagrama de Arquitectura</h3>
+                        <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex flex-col md:flex-row items-center justify-around space-y-4 md:space-y-0 md:space-x-4 text-center">
+                            <div class="flex flex-col items-center">
+                                <div class="bg-indigo-100 text-indigo-700 p-4 rounded-lg">Usuario & App</div>
+                                <p class="text-xs mt-1">PC Local</p>
+                            </div>
+                            <div class="font-bold text-slate-400 text-2xl">→</div>
+                            <div class="flex flex-col items-center">
+                                <div class="bg-sky-100 text-sky-700 p-4 rounded-lg">Bases de Datos</div>
+                                <p class="text-xs mt-1">RELA / AR / BR</p>
+                            </div>
+                            <div class="font-bold text-slate-400 text-2xl">→</div>
+                             <div class="flex flex-col items-center">
+                                <div class="bg-emerald-100 text-emerald-700 p-4 rounded-lg">Servidor SMTP</div>
+                                <p class="text-xs mt-1">Google Mail</p>
+                            </div>
+                        </div>
+                         <p class="text-sm text-slate-500 mt-4">La aplicación de escritorio orquesta la interacción entre el usuario, las bases de datos a través de la red y el servicio de correo de Google.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-semibold text-slate-800 mb-4">Límites del Sistema</h3>
+                        <ul class="list-disc list-inside bg-white p-6 rounded-lg shadow-sm border border-slate-200 space-y-2 text-slate-600">
+                            <li><span class="font-semibold">NO</span> es un sistema de gestión de casos de fraude.</li>
+                            <li><span class="font-semibold">NO</span> almacena un historial de envíos persistente.</li>
+                            <li><span class="font-semibold">NO</span> se integra con sistemas de tickets o CRM.</li>
+                            <li>La ejecución es <span class="font-semibold">LOCAL</span> en la PC de cada usuario.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Futuro del Proyecto Section -->
+            <section id="futuro" class="hidden section-fade">
+                <h2 class="text-3xl font-bold text-slate-900 mb-2">Futuro del Proyecto (Roadmap)</h2>
+                <p class="text-slate-600 mb-8">Las próximas mejoras planificadas para evolucionar el SNA.</p>
+                <div class="space-y-6">
+                    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex items-start">
+                        <div class="bg-indigo-100 text-indigo-700 font-bold rounded-full h-10 w-10 flex items-center justify-center mr-4">1</div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-indigo-700 mb-1">Empaquetado .exe</h3>
+                            <p class="text-slate-600">Convertir la aplicación en un único archivo ejecutable para eliminar la necesidad de que los usuarios instalen Python y las librerías, simplificando drásticamente la distribución.</p>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex items-start">
+                        <div class="bg-indigo-100 text-indigo-700 font-bold rounded-full h-10 w-10 flex items-center justify-center mr-4">2</div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-indigo-700 mb-1">Configuración Externa</h3>
+                            <p class="text-slate-600">Mover todas las credenciales, URLs y plantillas a un archivo de configuración `config.json` externo para facilitar las actualizaciones sin tener que modificar el código fuente.</p>
+                        </div>
+                    </div>
+                     <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 flex items-start">
+                        <div class="bg-indigo-100 text-indigo-700 font-bold rounded-full h-10 w-10 flex items-center justify-center mr-4">3</div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-indigo-700 mb-1">Interfaz de Administración</h3>
+                            <p class="text-slate-600">Crear una sección protegida por contraseña dentro de la aplicación para editar los portales y plantillas, garantizando un mantenimiento sencillo a largo plazo.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarLinks = document.querySelectorAll('.sidebar-link');
+            const sections = document.querySelectorAll('main section');
+            const flowchartSteps = document.querySelectorAll('.flowchart-step');
+
+            // Navigation logic
+            const showSection = (hash) => {
+                const targetId = hash ? hash.substring(1) : 'resumen';
+                sections.forEach(section => {
+                    if (section.id === targetId) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+
+                sidebarLinks.forEach(link => {
+                    if (link.getAttribute('href') === `#${targetId}`) {
+                        link.classList.add('active');
+                    } else {
+                        link.classList.remove('active');
+                    }
+                });
+            };
+            
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const hash = e.currentTarget.getAttribute('href');
+                    history.pushState(null, null, hash);
+                    showSection(hash);
+                });
+            });
+
+            // Handle back/forward browser buttons
+            window.addEventListener('popstate', () => {
+                showSection(window.location.hash);
+            });
+
+            // Initial section display
+            showSection(window.location.hash);
+
+            // Flowchart logic
+            flowchartSteps.forEach(step => {
+                step.addEventListener('click', () => {
+                    const detail = step.nextElementSibling;
+                    if (detail && detail.classList.contains('flowchart-detail')) {
+                        detail.classList.toggle('open');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
